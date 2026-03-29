@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const screenshots = [
   {
@@ -34,79 +35,106 @@ const screenshots = [
 ];
 
 function SnapSearch() {
+  const navigate = useNavigate();
   const [activeImage, setActiveImage] = useState(null);
+  const scrollRef = useRef(null);
+
+  // 🔥 FIXED scroll for scaled layout
+  const scrollLeft = () => {
+    scrollRef.current.scrollBy({
+      left: -1440,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current.scrollBy({
+      left: 1440,
+      behavior: "smooth",
+    });
+  };
 
   return (
-    <section className="snapsearch-page">
-      {/* HERO */}
-      <div className="snapsearch-hero">
-        <h1 className="snapsearch-title">SnapSearch AI</h1>
+    <div className="page-wrapper">
+      <section className="page project-page">
 
-        <p className="subtitle">
-          Discover, organize, and search your photos using AI-powered face
-          recognition and smart album management.
-        </p>
-      </div>
+        <div className="project-container">
 
-      {/* DESCRIPTION */}
-      <div className="snapsearch-description">
-        <p>
-          SnapSearch AI is a smart photo management system that helps users
-          organize images into albums, search photos using facial recognition,
-          and collaborate through shared albums. The focus was on building a
-          clean, intuitive UI while keeping the flow simple for non-technical
-          users.
-        </p>
+          {/* BACK */}
+          <button className="back-btn" onClick={() => navigate("/work")}>
+            ← Back
+          </button>
 
-        <ul>
-          <li>🔐 Secure authentication (Sign up / Login)</li>
-          <li>🧠 AI-powered face recognition</li>
-          <li>📁 Album creation & image uploads</li>
-          <li>🔗 Join shared albums via code</li>
-          <li>✨ Minimal, distraction-free UI</li>
-        </ul>
-      </div>
+          {/* TITLE */}
+          <h1 className="project-title">
+            SnapSearch AI – Smart Photo Management
+          </h1>
 
-      {/* SCREENSHOTS */}
-      <div className="snapsearch-gallery">
-        {screenshots.map((shot, index) => (
-          <div
-            key={index}
-            className="snapsearch-card"
-            onClick={() => setActiveImage(shot)}
-          >
-            <img src={shot.src} alt={shot.title} />
-            <div className="snapsearch-card-text">
-              <h3>{shot.title}</h3>
-              <p>{shot.desc}</p>
+          <p className="project-desc">
+            An AI-powered photo management system designed to simplify how users
+            organize, search, and share images using facial recognition and smart albums.
+          </p>
+
+          {/* FEATURES */}
+          <div className="project-features">
+            <ul>
+              <li>🔐 Secure authentication</li>
+              <li>🧠 AI-powered face recognition</li>
+              <li>📁 Album creation & uploads</li>
+              <li>🔗 Shared albums via code</li>
+              <li>✨ Clean & minimal UI</li>
+            </ul>
+          </div>
+
+          {/* SCROLL */}
+          <div className="scroll-wrapper">
+
+            <button className="scroll-btn left" onClick={scrollLeft}>
+              ←
+            </button>
+
+            <div className="horizontal-scroll" ref={scrollRef}>
+              {screenshots.map((shot, index) => (
+                <div
+                  className="scroll-card"
+                  key={index}
+                  onClick={() => setActiveImage(shot)}
+                >
+                  <img src={shot.src} alt={shot.title} />
+
+                  <div className="scroll-info">
+                    <h3>{shot.title}</h3>
+                    <p>{shot.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="scroll-btn right" onClick={scrollRight}>
+              →
+            </button>
+
+          </div>
+
+        </div>
+
+        {/* LIGHTBOX */}
+        {activeImage && (
+          <div className="lightbox" onClick={() => setActiveImage(null)}>
+            <div
+              className="lightbox-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => setActiveImage(null)}>✕</button>
+              <img src={activeImage.src} alt={activeImage.title} />
+              <h3>{activeImage.title}</h3>
+              <p>{activeImage.desc}</p>
             </div>
           </div>
-        ))}
-      </div>
+        )}
 
-      {/* LIGHTBOX PREVIEW */}
-      {activeImage && (
-        <div
-          className="snapsearch-lightbox"
-          onClick={() => setActiveImage(null)}
-        >
-          <div
-            className="snapsearch-lightbox-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="snapsearch-close"
-              onClick={() => setActiveImage(null)}
-            >
-              ✕
-            </button>
-            <img src={activeImage.src} alt={activeImage.title} />
-            <h3>{activeImage.title}</h3>
-            <p>{activeImage.desc}</p>
-          </div>
-        </div>
-      )}
-    </section>
+      </section>
+    </div>
   );
 }
 

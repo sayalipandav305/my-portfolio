@@ -1,299 +1,241 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
-function Home() {
-  const fullText = "HEY — I’M SAYALI";
-  const [text, setText] = useState("");
-  const [clicked, setClicked] = useState(false);
-  const [cursorClick, setCursorClick] = useState(false);
-  const [cursorOut, setCursorOut] = useState(false);
+export default function Home() {
 
-  // Typing effect
+  // 🔥 Scroll actions
+  const handleYes = () => {
+    document.getElementById("connect")?.scrollIntoView({
+      behavior: "smooth"
+    });
+  };
+
+const handleNo = () => {
+  const section = document.getElementById("about");
+
+  if (section) {
+    const yOffset = -80; // adjust based on your layout
+    const y = section.getBoundingClientRect().top + window.scrollY + yOffset;
+
+    window.scrollTo({ top: y, behavior: "smooth" });
+  }
+};
+const handleMyWork = (e) => {
+  e.preventDefault();
+
+  document.body.style.opacity = "0";   // fade out
+
+  setTimeout(() => {
+    window.location.href = "/work";
+  }, 300); // match animation time
+};
+  // ✨ Scroll reveal
   useEffect(() => {
-  const observer = new IntersectionObserver(
-    entries => {
+    const sections = document.querySelectorAll("section");
+
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add("show");
         }
       });
-    },
-    { threshold: 0.15 }
-  );
+    }, { threshold: 0.2 });
 
-  document.querySelectorAll(".reveal, .reveal-left, .reveal-scale")
-    .forEach(el => observer.observe(el));
+    sections.forEach(section => {
+      section.classList.add("hidden");
+      observer.observe(section);
+    });
 
-  return () => observer.disconnect();
-}, []);
- 
-  useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      setText(fullText.slice(0, i + 1));
-      i++;
-      if (i === fullText.length) clearInterval(interval);
-    }, 150);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Cursor + oval animation timeline
-  useEffect(() => {
-    // cursor click + oval reveal
-    const clickTimer = setTimeout(() => {
-      setCursorClick(true);
-      setClicked(true);
-    }, 1600);
-
-    // cursor exit
-    const outTimer = setTimeout(() => {
-      setCursorOut(true);
-    }, 3100);
-
-    return () => {
-      clearTimeout(clickTimer);
-      clearTimeout(outTimer);
-    };
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <>
-      {/* HERO SECTION */}
-      <div className="w-full h-screen flex flex-col items-center justify-center -translate-y-12 relative">
-        {/* Heading */}
-        <h1
-          className="text-[96px] font-light text-gray-900 text-center"
-          style={{ fontFamily: "Sansation, sans-serif" }}
-        >
-          {text}
-          <span className="animate-blink">|</span>
-        </h1>
+    <div>
 
-        {/* Oval */}
-        <p
-          className={`text-center mt-6 oval-box ${
-            clicked ? "oval-active" : "oval-black"
-          }`}
-          style={{
-            fontFamily: "Sansation, sans-serif",
-            fontSize: "24px",
-            width: "649px",
-            height: "62px",
-            borderRadius: "73px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {clicked && "I make the internet easier and prettier :)"}
-        </p>
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-box">
 
-        {/* Cursor image */}
-        <img
-          src="/assets/cursor.png"
-          alt="cursor"
-          className={`cursor-img cursor-animate
-            ${cursorClick ? "cursor-click" : ""}
-            ${cursorOut ? "cursor-out" : ""}
-          `}
-        />
+          <h1 className="hero-text">
+  <span className="mono">BUILDING</span>{" "}
+  <span className="aldrich">things</span><br />
+  <span className="aldrich">that</span>{" "}
+  <span className="mono">MATTER.</span>
+</h1>
 
-        {/* Down arrow */}
-        <div
-          className="mt-28 cursor-pointer"
-          onClick={() =>
-            document
-              .getElementById("sections")
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
-        >
-          <svg
-            width="72"
-            height="72"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="black"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
+         <div className="question-box">
+  
+  <div className="line"></div>
 
-{/* NEXT SECTION */}
-<div
-
-  id="sections"
-  className="w-full min-h-screen flex items-center justify-center"
->
-  <div className="triangle-grid">
-    <div
-      className="triangle clip-up pink left cursor-pointer"
-      onClick={() =>
-        document.getElementById("about")?.scrollIntoView({
-          behavior: "smooth",
-        })
-      }
-    >
-      <span>About Me</span>
-    </div>
-
-    <div
-      className="triangle clip-down blue center cursor-pointer"
-      onClick={() =>
-        document.getElementById("work")?.scrollIntoView({
-          behavior: "smooth",
-        })
-      }
-    >
-      <span>My Work</span>
-    </div>
-
-    <div
-      className="triangle clip-up peach right cursor-pointer"
-      onClick={() =>
-        document.getElementById("connect")?.scrollIntoView({
-          behavior: "smooth",
-        })
-      }
-    >
-      <span>Connect</span>
-    </div>
+  <div className="question-text">
+    <p>DO YOU</p>
+    <p className="bold">KNOW</p>
+    <p>ME?</p>
   </div>
+
+  <div className="buttons">
+    <button className="yes-btn" onClick={handleYes}>YES</button>
+
+    <button className="no-btn" onClick={handleNo}>NO</button>
+  </div>
+
 </div>
 
-<section id="about" className="about-section">
-  {/* BACKGROUND BLOCKS (FULL WIDTH) */}
-  <div className="about-bg bg-left"></div>
-  <div className="about-bg bg-right"></div>
-  <div className="about-bg bg-middle"></div>
+          <a href="#" className="my-work" onClick={handleMyWork}>
+            My Work
+          </a>
 
-  {/* CONTENT */}
-  <div className="about-container">
-    {/* Title */}
-    <div className="about-pill reveal-left">About Me</div>
+          {/* Vertical Name */}
 
 
-    {/* Text */}
-    <div className="about-text-wrapper">
-      <p className="about-text reveal">
-        I’m an IT engineering student into UI/UX and frontend dev. I like keeping
-        things clean, intuitive, and easy on the eyes. From design systems and
-        layouts to tiny micro-interactions, I love turning Figma screens into
-        smooth, responsive websites. For me, good design isn’t just about how it
-        looks—it’s about how it feels to use. I am great at problem solving too
-        thanks to my engineering background.
+        </div>
+              <div className="name-wrapper">
+  <div className="name-horizontal">SAYALI</div>
+  <div className="name-vertical">PANDAV</div>
+</div>
+      </section>
+
+
+      {/* ABOUT */}
+    <section id="about" className="about">
+
+  <h2 className="about-title">ABOUT ME</h2>
+
+  <div className="about-content">
+
+    <div className="about-left">
+    <p>
+  I’m an IT engineering student who turns <span className="highlight">ideas into experiences</span>.
+
+  I enjoy designing <span className="highlight">interfaces that look good</span>, feel smooth, and actually make sense.
+
+  I love mixing <span className="highlight">creativity with code</span> — whether it's building UI, adding micro-interactions, or developing full-stack projects.
+</p>
+
+      <p>
+        Currently leveling up in UI/UX and frontend development, and always <span className="highlight">open to creating something cool</span>.
       </p>
     </div>
 
-   <p className="about-subtext reveal" style={{ transitionDelay: "0.15s" }}>
-      When I’m not designing or coding, I’m usually behind a camera or on a
-      badminton court or in the mountains.
-    </p>
-  
-  
+<div className="about-right">
+  <p>Hi, I’m Sayali!</p>
 
-    {/* Gallery */}
-<div className="photo-stack reveal">
-  <img src="/assets/photography/1.jpg" className="stack-img card-1" />
-  <img src="/assets/photography/2.jpg" className="stack-img card-2" />
-  <img src="/assets/photography/3.jpg" className="stack-img card-3" />
-  <img src="/assets/photography/4.jpg" className="stack-img card-4" />
-  <img src="/assets/photography/5.jpg" className="stack-img card-5" />
+  <div className="photo-box">
+    <img src="/assets/sayali.jpg" className="about-photo" />
+  </div>
 </div>
 
-<p className="photo-caption reveal">
-  A few frames from what I notice when I slow down.
-  <p className="photo-caption reveal" style={{ transitionDelay: "0.15s" }}>Photography Account:<a href="https://www.instagram.com/shuttr.stories/" target="_blank" rel="noopener noreferrer"> @shuttr.stories</a></p>
+  </div>
+
+  {/* SKILLS FLOATING BOX */}
+<div className="skills-box">
+  <h3>SKILLS</h3>
+
+  <div className="skills-grid">
+    <img src="/assets/logos/figma.png" />
+    <img src="/assets/logos/html.png" />
+    <img src="/assets/logos/react.png" />
+    <img src="/assets/logos/mysql.png" />
+    <img src="/assets/logos/mongodb.png" />
+    <img src="/assets/logos/ps.png" />
+
+    <img src="/assets/logos/css.png" />
+    <img src="/assets/logos/js.png" />
+    <img src="/assets/logos/nodejs.png" />
+    <img src="/assets/logos/postgre.png" />
+    <img src="/assets/logos/cpp.png" />
+    <img src="/assets/logos/davinci.png" />
+  </div>
+</div>
+
+</section>
+    
+
+
+      {/* GALLERY */}
+  <section className="gallery">
+
+ <p className="gallery-title">
+  Check out{" "}
+  <a 
+    href="https://instagram.com/shuttr.stories" 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="insta-link"
+  >
+    @shuttr.stories
+    <span className="insta-icon">📸</span>
+  </a>
 </p>
 
+  <div className="gallery-content">
+
+    {/* LEFT GRID */}
+    <div className="gallery-grid">
+      <div className="box box1"><img src="/assets/photography/1.jpg" /></div>
+      <div className="box box2"><img src="/assets/photography/2.jpg" /></div>
+      <div className="box box3"><img src="/assets/photography/3.jpg" /></div>
+      <div className="box box4"><img src="/assets/photography/4.jpg" /></div>
+      <div className="box box5"><img src="/assets/photography/5.jpg" /></div>
+   
+    </div>
+
+    {/* RIGHT TEXT */}
+    <div className="gallery-text">
+      <p>
+        Beyond coding, I enjoy exploring creative outlets like 
+        <span className="highlight"> designing</span>, 
+        <span className="highlight"> editing aesthetic reels</span>, 
+        and capturing moments through visuals.  
+        I also love discovering new ideas, trends, and experiences that 
+        <span className="highlight"> inspire my work and creativity</span>.
+      </p>
+
+      <p>
+        Outside of this, I enjoy 
+        <span className="highlight"> trekking</span>, 
+        playing badminton, and 
+        <span className="highlight"> photography</span> — 
+        experiences that keep me refreshed and continuously fuel my creativity.
+      </p>
+    </div>
+
   </div>
+
 </section>
 
 
-{/* MY WORK SECTION */}
-<section id="work" className="work-section">
-  <div className="work-container">
 
-    {/* Title */}
-    <div className="work-pill">My Work</div>
+      {/* CONNECT */}
+      <section id="connect" className="connect">
+        <h2>CONNECT</h2>
 
-    {/* Grid */}
-<div className="work-scroll">
+        <div className="icons">
+          <div
+            className="icon linkedin"
+            onClick={() => window.open("https://www.linkedin.com/in/sayali-pandav-b4166a273", "_blank")}
+          >
+            in
+          </div>
 
-  <a href="https://www.behance.net/gallery/238228779/Swiggy-Redesign" className="work-card work-medium">
-    <div className="work-thumb">
-      <img src="/assets/swiggy.jpg" alt="App Redesign" />
-    </div>
-    <h3>App Redesign</h3>
-  </a>
-
-  <a href="https://www.figma.com/design/ajfO81wZE7QpymT9ocVfNv/HOTEL-DASHBOARD?node-id=0-1&t=Z2AKrNlnzFfjnPqX-1" className="work-card work-medium">
-    <div className="work-thumb">
-      <img src="/assets/ATG.png" alt="Portfolio Website" />
-    </div>
-    <h3>Dashboard Design</h3>
-  </a>
-
-<Link to="/snapsearch" className="work-card work-medium">
-  <div className="work-thumb">
-    <img src="/assets/Snapsearch.jpg" alt="Image Sorting Website" />
-  </div>
-  <h3>Image Sorting Website</h3>
-</Link>
-
-  <Link to="/trendzy" className="work-card work-medium">
-    <div className="work-thumb">
-      <img src="/assets/Trendzyy.png" alt="Trendzy" />
-    </div>
-    <h3>E-Commerce Website UI</h3>
-  </Link>
-
-
+        <div
+  className="icon gmail"
+  onClick={() =>
+    window.location.href =
+      "mailto:sayali.rpandav@gmail.com?subject=Let's Connect&body=Hi Sayali,"
+  }
+>
+  G
 </div>
-  </div>
-</section>
-{/* CONNECT SECTION */}
 
-<section id="connect" className="connect-section">
-  <div className="connect-container">
-
-    {/* Title */}
-    <div className="connect-pill">Connect</div>
-
-    <div className="connect-content">
-      
-      {/* Left links */}
-      <div className="connect-links">
-        <a href="https://www.linkedin.com/in/sayali-pandav-b4166a273/" target="_blank">LinkedIn</a>
-        <a href="https://drive.google.com/file/d/1JbfGTYRsTW30G2Bxx3iRnOItUdFwOuUE/view?usp=sharing" target="_blank">Resume</a>
-        <a href="mailto:sayali.rpandav@gmail.com">Email</a>
-      </div>
-
-      {/* Right image */}
-      <div className="connect-image">
-        <img
-          src="/assets/sayali.jpg"
-          alt="Sayali"
-        />
-      </div>
+          <div
+            className="icon behance"
+            onClick={() => window.open("https://www.behance.net/sayalipandav", "_blank")}
+          >
+            Be
+          </div>
+        </div>
+      </section>
 
     </div>
-  </div>
-</section>
-
-
-
-
-    </>
-
-    
   );
-  
 }
-
-
-
-export default Home;

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const screens = [
   {
@@ -34,131 +35,109 @@ const screens = [
 ];
 
 function Trendzy() {
-    useEffect(() => {
-  const reveals = document.querySelectorAll(".reveal, .reveal-scale");
-  reveals.forEach((el, i) => {
-    setTimeout(() => el.classList.add("show"), i * 120);
-  });
-}, []);
-
   const [activeImage, setActiveImage] = useState(null);
-useEffect(() => {
-  const handleEsc = (e) => {
-    if (e.key === "Escape") setActiveImage(null);
-  };
-  window.addEventListener("keydown", handleEsc);
-  return () => window.removeEventListener("keydown", handleEsc);
-}, []);
-useEffect(() => {
-  const handleScroll = () => {
-    document.querySelectorAll(".parallax-img").forEach((img, i) => {
-      const rect = img.getBoundingClientRect();
-      const speed = i % 2 === 0 ? 0.08 : 0.12;
+  const navigate = useNavigate();
+  const scrollRef = useRef(null);
 
-      const offset = (window.innerHeight - rect.top) * speed;
-      img.style.transform = `translateY(${offset}px)`;
+  // 🔥 FIXED scroll for scaled layout
+  const scrollLeft = () => {
+    scrollRef.current.scrollBy({
+      left: -1440,
+      behavior: "smooth",
     });
   };
 
-  window.addEventListener("scroll", handleScroll);
-  handleScroll();
+  const scrollRight = () => {
+    scrollRef.current.scrollBy({
+      left: 1440,
+      behavior: "smooth",
+    });
+  };
 
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
+  // ESC close
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setActiveImage(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
-
-  // always open from top
+  // scroll to top
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <section className="trendzy-page">
-      {/* HERO */}
-      <div className="trendzy-hero">
-        <h1 className="trendzy-title">Trendzy</h1>
-        <p className="trendzy-subtitle">
-          A minimal e-commerce experience focused on clarity, flow, and everyday fashion.
-        </p>
-      </div>
+    <div className="page-wrapper">
+      <section className="page project-page">
 
-      {/* OVERVIEW */}
-      <div className="trendzy-description reveal">
-        <p>
-          <strong>Trendzy</strong> is a fashion e-commerce UI designed to feel calm,
-          intuitive, and distraction-free. The goal was to simplify shopping by
-          reducing visual noise while keeping key actions obvious and accessible.
-        </p>
+        <div className="project-container">
 
-        <ul>
-          <li>🛍️ Product browsing with featured & new arrivals</li>
-          <li>🧾 Clean cart and checkout experience</li>
-          <li>📦 Order tracking with clear status indicators</li>
-          <li>🎨 Consistent typography & soft color palette</li>
-          <li>⚡ Frontend focused on usability & layout clarity</li>
-        </ul>
-      </div>
+          {/* BACK */}
+          <button className="back-btn" onClick={() => navigate("/work")}>
+            ← Back
+          </button>
 
-      {/* SCREENS */}
- {/* SCREENS – STORY STYLE */}
-{/* SCREENS – STORY STYLE */}
-<div className="trendzy-sections">
- {screens.map((screen, index) => (
-  <section
-    key={index}
-    className={`trendzy-section ${index % 2 === 0 ? "light" : "dark"}`}
-  >
-    <div
-      className={`trendzy-row ${
-        index % 2 === 0 ? "row-normal" : "row-reverse"
-      } reveal`}
-    >
-      {/* IMAGE */}
-      <div
-        className="trendzy-section-image parallax-img"
-        onClick={() => setActiveImage(screen)}
-      >
-        <img src={screen.src} alt={screen.title} />
-      </div>
+          {/* TITLE */}
+          <h1 className="project-title">
+            Trendzy – E-commerce Experience
+          </h1>
 
-      {/* TEXT */}
-      <div className="trendzy-section-text">
-        <h3>{screen.title}</h3>
-        <p>{screen.desc}</p>
-      </div>
+          <p className="project-desc">
+            A minimal fashion e-commerce UI focused on clarity, smooth user flow,
+            and a distraction-free shopping experience.
+          </p>
+
+          {/* SCROLL */}
+          <div className="scroll-wrapper">
+
+            <button className="scroll-btn left" onClick={scrollLeft}>
+              ←
+            </button>
+
+            <div className="horizontal-scroll" ref={scrollRef}>
+              {screens.map((screen, index) => (
+                <div
+                  className="scroll-card"
+                  key={index}
+                  onClick={() => setActiveImage(screen)}
+                >
+                  <img src={screen.src} alt={screen.title} />
+
+                  <div className="scroll-info">
+                    <h3>{screen.title}</h3>
+                    <p>{screen.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="scroll-btn right" onClick={scrollRight}>
+              →
+            </button>
+
+          </div>
+
+        </div>
+
+        {/* LIGHTBOX */}
+        {activeImage && (
+          <div className="lightbox" onClick={() => setActiveImage(null)}>
+            <div
+              className="lightbox-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => setActiveImage(null)}>✕</button>
+              <img src={activeImage.src} alt={activeImage.title} />
+              <h3>{activeImage.title}</h3>
+              <p>{activeImage.desc}</p>
+            </div>
+          </div>
+        )}
+
+      </section>
     </div>
-  </section>
-))}
-
-</div>
-
-{activeImage && (
-  <div
-    className="trendzy-lightbox"
-    onClick={() => setActiveImage(null)}
-  >
-    <div
-      className="trendzy-lightbox-content"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        className="trendzy-close"
-        onClick={() => setActiveImage(null)}
-      >
-        ✕
-      </button>
-      <img src={activeImage.src} alt={activeImage.title} />
-      <h3>{activeImage.title}</h3>
-      <p>{activeImage.desc}</p>
-    </div>
-  </div>
-)}
-
-
-
-
-      
-    </section>
   );
 }
 
